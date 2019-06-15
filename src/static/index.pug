@@ -1,0 +1,40 @@
+html
+    head
+        link(rel='stylesheet', href='stylesheets/default.css')
+        link(rel='stylesheet', href='scripts/bootstrap/css/bootstrap.min.css')
+        script.
+          if (typeof module === 'object') { window.module = module; module = undefined;}
+        script.
+            if(window.module) module = window.module;
+        script(src='scripts/jquery/external/jquery/jquery.js')
+        script(src='scripts/jquery/jquery-ui.min.js')
+        script(src='scripts/noty/packaged/jquery.noty.packaged.min.js')
+        script(src='scripts/noty/themes/cryogen.js?rand=5999', type='text/javascript')
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js", integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1", crossorigin="anonymous")
+        script(src='scripts/bootstrap/js/bootstrap.min.js')
+        script(src='https://kit.fontawesome.com/29130dff13.js')
+        script(src='scripts/default.js')
+    body
+      div#wrapper
+        div#title-bar
+          img#title-img(src='images/icon.png')
+          div#title
+          div.buttons
+            div#minimize-button
+            div#reload-button
+            div#exit-button
+        div#date Loading date...
+        div#time Loading time...
+        div#number-pad
+            div#text-bar.col-md-11.offset-md-1
+            div.container
+                div.row
+                    for i in [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                        div.number.col-md-3.offset-md-1
+                            span= i
+                    div.col-md-3.offset-md-1
+                    div.col-md-3.offset-md-1.number
+                        span 0
+                    div#backspace.col-md-3.offset-md-1.number
+                        i.fas.fa-backspace
+        div#version Getting version...
