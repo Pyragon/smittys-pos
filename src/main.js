@@ -3,6 +3,7 @@ const url = require('url');
 const path = require('path');
 const setupPug = require('electron-pug');
 const windowState = require('electron-window-state');
+const _mysql = require(__dirname+'/mysql.js');
 const {
     openProcessManager
 } = require('electron-process-manager');
@@ -33,6 +34,7 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 var pos = (function() {
 
     var window;
+    let mysql;
 
     function createWindow() {
         try {
@@ -100,6 +102,8 @@ var pos = (function() {
     return {
 
         init: function() {
+            mysql = _mysql(store);
+            mysql.start();
             startElectron();
             registerNotifications();
         }

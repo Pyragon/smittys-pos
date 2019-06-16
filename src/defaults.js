@@ -1,3 +1,9 @@
 module.exports = function(app) {
-    return {};
+    return {
+        'db-host': 'localhost',
+        'db-user': '',
+        'db-pass': '',
+        db: '',
+        'con-limit': 10
+    };
 };
