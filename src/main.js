@@ -108,7 +108,7 @@ var pos = (function() {
             registerNotifications();
         }
 
-    }
+    };
 
 })();
 
