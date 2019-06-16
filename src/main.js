@@ -79,6 +79,13 @@ var pos = (function() {
 
     function registerNotifications() {
         ipcMain.on('package:get-version', () => sendMessage('package:get-version', pkg.version));
+        ipcMain.on('employee:get-with-id', (event, data) => returnEmployee(data));
+
+    function returnEmployee(id) {
+        let employee = mysql.select('employees', 'WHERE id = ?', null, [ id ]);
+        employee.then((results) => {
+            sendMessage('employee:return', results[0]);
+        }).catch((error) => sendMessage('employee:return', { 'error': 'Unable to find employee with that ID.'}));
     }
 
     function startElectron() {

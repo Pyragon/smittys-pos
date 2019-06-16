@@ -148,3 +148,23 @@ body {
     line-height: 75px;
     height: 75px;
 }
+
+/* INDEX BUTTONS */
+
+#index-buttons {
+    position: absolute;
+    bottom: 30px;
+    right: 10px;
+    width: 450px;
+}
+
+.index-btn {
+    width: 200px;
+    height: 60px;
+    background-color: #444;
+    border: 1px solid #222;
+    border-radius: 10px;
+    margin-top: 10px;
+    color: white;
+}
+
