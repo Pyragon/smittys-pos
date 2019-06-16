@@ -54,7 +54,8 @@ var pos = (function() {
                     backgroundThrottling: false,
                     thickFrame: true,
                     transparent: true,
-                    title: 'Smitty\'s POS'
+                    title: 'Smitty\'s POS',
+                    icon: __dirname+'/static/images/icon.png'
                 });
             } catch(e) {
                 console.log(e);
