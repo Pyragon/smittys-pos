@@ -54,7 +54,7 @@ $.noty.themes.cryogen = {
             position: 'fixed',
             width: '100%',
             height: '100%',
-            backgroundColor: '#000',
+            backgroundColor: '#333',
             zIndex: 10000,
             opacity: 0.6,
             display: 'none',
@@ -92,8 +92,8 @@ $.noty.themes.cryogen = {
         this.$buttons.css({
             padding: '10px 5px',
             textAlign: 'right',
-            borderTop: '2px solid #18597f',
-            backgroundColor: '#111'
+            borderTop: '2px solid #000',
+            backgroundColor: '#333'
         });
 
         this.$buttons.find('button').css({
@@ -175,7 +175,7 @@ $.noty.themes.cryogen = {
             case 'alert':
             case 'notification':
                 this.$bar.css({
-                    backgroundColor: '#111',
+                    backgroundColor: '#333',
                     borderColor: '#555',
                     color: '#AAA'
                 });
@@ -205,12 +205,12 @@ $.noty.themes.cryogen = {
                 break;
             case 'information':
                 this.$bar.css({
-                    backgroundColor: '#111',
-                    borderColor: '#0B90C4',
+                    backgroundColor: '#333',
+                    borderColor: '#000',
                     color: '#FFF'
                 });
                 this.$buttons.css({
-                    borderTop: '1px solid #0B90C4'
+                    borderTop: '1px solid #000'
                 });
                 break;
             case 'success':
@@ -225,8 +225,8 @@ $.noty.themes.cryogen = {
                 break;
             default:
                 this.$bar.css({
-                    backgroundColor: '#111',
-                    borderColor: '#18597f',
+                    backgroundColor: '#333',
+                    borderColor: '#000',
                     color: '#AAA'
                 });
                 break;

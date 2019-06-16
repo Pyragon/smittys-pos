@@ -36,6 +36,19 @@ $(document).ready(() => {
         }
         employeeReturnFunc(data);
     });
+    ipcRenderer.on('pug:rendered-file', (event, data) => {
+        n = noty({
+            text: data.title,
+            type: 'confirm',
+            layout: 'center',
+            dismissQueue: false,
+            template: data.html,
+            theme: 'cryogen',
+            buttons: [{
+                addClass: 'btn btn-danger', text: 'Cancel', onClick: ($noty) => $noty.close()
+            }]
+        });
+    });
 
     $('#minimize-button').click(() => remote.getCurrentWindow().minimize());
 
@@ -52,14 +65,21 @@ $(document).ready(() => {
             return false;
         }
         let number = $(this).find('span').html();
-        let maxLength = 6;
         if((number+current).length > 6) {
-            sendAlert('Too many characters!');
+            sendAlert('Maximum: 6 numbers!');
             return false;
         }
         $('#text-bar').html(current+number);
     });
 
+    $('.index-btn[data-name="function"]').click(() => {
+        let id = parseInt($('#text-bar').html());
+        if(!id) {
+            sendAlert('Please enter your ID or swipe your card first.');
+            return false;
+        }
+        openMenu('function', 'Functions', id);
+    });
 
     $('.index-btn[data-name="clock"]').click(function() {
         let extra = $(this).data('extra');
@@ -67,6 +87,10 @@ $(document).ready(() => {
         let id = parseInt($('#text-bar').html());
         ipcRenderer.send('employee:get-with-id', id);
     });
+
+    function openMenu(menu, title, id) {
+        ipcRenderer.send('pug:render-file', { menu, title, id });
+    }
 
     function clock(employee, extra) {
         console.log(employee);

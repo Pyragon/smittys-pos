@@ -168,3 +168,11 @@ body {
     color: white;
 }
 
+.menu-btn {
+    height: 40px;
+    background-color: #444;
+    border: 1px solid #222;
+    border-radius: 10px;
+    color: white;
+    margin-bottom: 10px;
+}

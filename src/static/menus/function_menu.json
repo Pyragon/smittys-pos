@@ -1,0 +1,10 @@
+{
+    "Manager Menu": {
+        "command": "managerMenu",
+        "requires": 1
+    },
+    "Open Tables": "checkOpenTables",
+    "Reading": "getReading",
+    "Transfer Table": "transferTable",
+    "Paid Out": "paidOut"
+}

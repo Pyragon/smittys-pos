@@ -1,6 +1,7 @@
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
+const pug = require('pug');
 const setupPug = require('electron-pug');
 const windowState = require('electron-window-state');
 const _mysql = require(__dirname+'/mysql.js');
@@ -21,7 +22,7 @@ const {
     ipcMain,
     session,
     protocol,
-    Notification //jshint ignore:line
+    Notification
 } = electron;
 var defaults = require(__dirname + '/defaults.js')(app);
 const Store = require('electron-store');
@@ -74,6 +75,21 @@ var pos = (function() {
         }
     }
 
+    function renderFile(data) {
+        let html = pug.compileFile(data.path);
+        if(!html) return false;
+        sendMessage('pug:rendered-file', { 'html': html(data) });
+    }
+
+    function openMenu(data) {
+        let id = data.id;
+        if(!id) return false;
+        let menuData = require(path.join(__dirname, 'static', 'menus', data.menu+'_menu.json'));
+        if(!menuData) return false;
+        let html = pug.compileFile(path.join(__dirname, 'static', 'menus', 'menu.pug'), { data: menuData });
+        sendMessage('menu:open', { 'html':html({data:menuData}), 'title': data.title});
+    }
+
     function sendMessage(opcode, data) {
         window.webContents.send(opcode, data);
     }
@@ -81,6 +97,9 @@ var pos = (function() {
     function registerNotifications() {
         ipcMain.on('package:get-version', () => sendMessage('package:get-version', pkg.version));
         ipcMain.on('employee:get-with-id', (event, data) => returnEmployee(data));
+        ipcMain.on('menu:open', (event, data) => openMenu(data));
+        ipcMain.on('pug:render-file', (event, data) => openMenu(data));
+    }
 
     function returnEmployee(id) {
         let employee = mysql.select('employees', 'WHERE id = ?', null, [ id ]);
