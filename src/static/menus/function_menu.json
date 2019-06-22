@@ -1,6 +1,6 @@
 {
     "Manager Menu": {
-        "command": "managerMenu",
+        "command": "openManagerMenu",
         "requires": 1
     },
     "Open Tables": "checkOpenTables",

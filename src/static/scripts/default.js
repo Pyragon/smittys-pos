@@ -23,6 +23,8 @@ const GOODBYES = [
     "See ya next time, %name!"
 ];
 
+let serverId = -1;
+
 $(document).ready(() => {
     $("body").keydown(e => {
         let key = e.which;
@@ -42,6 +44,7 @@ $(document).ready(() => {
 
     ipcRenderer.send("package:get-version");
 
+    ipcRenderer.on("menu:click-option", (event, data) => clickMenuOption(data));
     ipcRenderer.on("package:get-version", (event, data) => setVersion(data));
     ipcRenderer.on("employee:return", (event, data) => {
         if (!employeeReturnFunc) return false;
@@ -66,6 +69,7 @@ $(document).ready(() => {
                 onClick: closeNoty
             }]
         });
+        sendAlert(data.rolePriveliges);
     });
 
     $("#minimize-button").click(() => remote.getCurrentWindow().minimize());
@@ -114,12 +118,32 @@ $(document).ready(() => {
         ipcRenderer.send("employee:get-with-id", id);
     });
 
+    $('.index-btn[data-name="table"]').click(function() {
+        if (n) return false;
+        let val = $("#text-bar").html();
+        if (!val) {
+            sendAlert("Please enter your ID or swipe your card first.");
+            return false;
+        }
+        let id = parseInt(val);
+        openMenu("table", "Table", id);
+    });
+
     function openMenu(menu, title, id) {
         ipcRenderer.send("menu:open", {
             menu,
             title,
             id
         });
+    }
+
+    function clickMenuOption(command) {
+        console.log(command);
+        window[command]();
+    }
+
+    function openManagerMenu() {
+        openMenu('manager', 'Manager Menu', -1);
     }
 
     function clock(employee, extra) {

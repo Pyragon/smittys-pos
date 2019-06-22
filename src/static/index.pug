@@ -3,7 +3,7 @@ html
         link(rel='stylesheet', href='stylesheets/default.css')
         link(rel='stylesheet', href='scripts/bootstrap/css/bootstrap.min.css')
         script.
-          if (typeof module === 'object') { window.module = module; module = undefined;}
+            if (typeof module === 'object') { window.module = module; module = undefined;}
         script.
             if(window.module) module = window.module;
         script(src='scripts/jquery/external/jquery/jquery.js')
@@ -44,7 +44,7 @@ html
                     button.index-btn.col-md-5.offset-md-1 Quick Order
                     div.col-md-5.offset-md-1
                 div.row
-                    button.index-btn.col-md-5.offset-md-1 Table
+                    button.index-btn.col-md-5.offset-md-1(data-name='table') Table
                     button.index-btn.col-md-5.offset-md-1(data-name='function') Function
                 div.row
                     button.index-btn.col-md-5.offset-md-1(data-name='clock', data-extra='in') Clock In

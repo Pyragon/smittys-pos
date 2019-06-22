@@ -83,22 +83,28 @@ var pos = (function () {
         });
     }
 
+    function clickMenuOption(option) {
+        sendMessage("menu:click-option", option);
+    }
+
     async function openMenu(data) {
         let id = data.id;
-        if (!id) return false;
         try {
-            let employee = await getEmployee(id);
-            if (!employee) return false;
-            let rolePriveleges = 0;
-            employee = employee[0];
-            let role = await getRole(employee.default_role);
-            if (role)
-                rolePriveleges = role[0].privelege;
+            let employee;
+            let rolePriveliges = 0;
+            if(id >= 0) {
+                let employee = await getEmployee(id);
+                    if (!employee) return false;
+                    employee = employee[0];
+                    let role = await getRole(employee.default_role);
+                    if (role)
+                        rolePriveliges = role[0].privilege;
+            }
             let menuData = require(path.join(__dirname, 'static', 'menus', data.menu + '_menu.json'));
             if (!menuData) return false;
             menuData = filter(menuData, d => {
                 let required = d.requires || 0;
-                if (typeof d === 'object') return rolePriveleges >= required;
+                if (typeof d === 'object') return rolePriveliges >= required;
                 return true;
             });
             let html = pug.compileFile(path.join(__dirname, 'static', 'menus', 'menu.pug'), {
@@ -108,7 +114,8 @@ var pos = (function () {
                 'html': html({
                     data: menuData
                 }),
-                'title': data.title
+                'title': data.title,
+                rolePriveliges
             });
         } catch (err) {
             console.error(err);
@@ -123,6 +130,7 @@ var pos = (function () {
         ipcMain.on('package:get-version', () => sendMessage('package:get-version', pkg.version));
         ipcMain.on('employee:get-with-id', (event, data) => returnEmployee(data));
         ipcMain.on('menu:open', (event, data) => openMenu(data));
+        ipcMain.on('menu:click-option', (event, data) => sendMessage('menu:click-option', data));
         ipcMain.on('pug:render-file', (event, data) => openMenu(data));
     }
 
