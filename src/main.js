@@ -4,7 +4,7 @@ const path = require('path');
 const pug = require('pug');
 const setupPug = require('electron-pug');
 const windowState = require('electron-window-state');
-const _mysql = require(__dirname+'/mysql.js');
+const _mysql = require(__dirname + '/mysql.js');
 const {
     openProcessManager
 } = require('electron-process-manager');
@@ -29,10 +29,10 @@ const Store = require('electron-store');
 const store = new Store({
     defaults
 });
-const pkg = require(__dirname+'/../package.json');
+const pkg = require(__dirname + '/../package.json');
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 
-var pos = (function() {
+var pos = (function () {
 
     var window;
     let mysql;
@@ -56,9 +56,9 @@ var pos = (function() {
                     thickFrame: true,
                     transparent: true,
                     title: 'Smitty\'s POS',
-                    icon: __dirname+'/static/images/icon.png'
+                    icon: __dirname + '/static/images/icon.png'
                 });
-            } catch(e) {
+            } catch (e) {
                 console.log(e);
             }
             window.loadURL(url.format({
@@ -70,24 +70,49 @@ var pos = (function() {
             // window.on('restore', () => window.setFullScreen(true));
             mainWindowState.manage(window);
             Menu.setApplicationMenu(null);
-        } catch(e) {
+        } catch (e) {
             console.log(e);
         }
     }
 
     function renderFile(data) {
         let html = pug.compileFile(data.path);
-        if(!html) return false;
-        sendMessage('pug:rendered-file', { 'html': html(data) });
+        if (!html) return false;
+        sendMessage('pug:rendered-file', {
+            'html': html(data)
+        });
     }
 
-    function openMenu(data) {
+    async function openMenu(data) {
         let id = data.id;
-        if(!id) return false;
-        let menuData = require(path.join(__dirname, 'static', 'menus', data.menu+'_menu.json'));
-        if(!menuData) return false;
-        let html = pug.compileFile(path.join(__dirname, 'static', 'menus', 'menu.pug'), { data: menuData });
-        sendMessage('menu:open', { 'html':html({data:menuData}), 'title': data.title});
+        if (!id) return false;
+        try {
+            let employee = await getEmployee(id);
+            if (!employee) return false;
+            let rolePriveleges = 0;
+            employee = employee[0];
+            let role = await getRole(employee.default_role);
+            if (role)
+                rolePriveleges = role[0].privelege;
+            let menuData = require(path.join(__dirname, 'static', 'menus', data.menu + '_menu.json'));
+            if (!menuData) return false;
+            menuData = filter(menuData, d => {
+                let required = d.requires || 0;
+                if (typeof d === 'object') return rolePriveleges >= required;
+                return true;
+            });
+            let html = pug.compileFile(path.join(__dirname, 'static', 'menus', 'menu.pug'), {
+                data: menuData
+            });
+            sendMessage('menu:open', {
+                'html': html({
+                    data: menuData
+                }),
+                'title': data.title
+            });
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     function sendMessage(opcode, data) {
@@ -102,10 +127,19 @@ var pos = (function() {
     }
 
     function returnEmployee(id) {
-        let employee = mysql.select('employees', 'WHERE id = ?', null, [ id ]);
-        employee.then((results) => {
+        getEmployee(id).then((results) => {
             sendMessage('employee:return', results[0]);
-        }).catch((error) => sendMessage('employee:return', { 'error': 'Unable to find employee with that ID.'}));
+        }).catch((error) => sendMessage('employee:return', {
+            'error': 'Unable to find employee with that ID.'
+        }));
+    }
+
+    function getEmployee(id) {
+        return mysql.select('employees', 'WHERE id = ?', null, [id]);
+    }
+
+    function getRole(id) {
+        return mysql.select('roles', 'WHERE id = ?', null, [id]);
     }
 
     function startElectron() {
@@ -118,17 +152,29 @@ var pos = (function() {
         });
 
         app.on('window-all-closed', () => {
-            if(process.platform !== 'darwin') app.quit();
+            if (process.platform !== 'darwin') app.quit();
         });
 
         app.on('activate', () => {
-            if(window == null) createWindow();
+            if (window == null) createWindow();
         });
+    }
+
+    function filter(obj, predicate) {
+        var result = {},
+            key;
+
+        for (key in obj) {
+            if (obj.hasOwnProperty(key) && predicate(obj[key])) {
+                result[key] = obj[key];
+            }
+        }
+        return result;
     }
 
     return {
 
-        init: function() {
+        init: function () {
             mysql = _mysql(store);
             mysql.start();
             startElectron();

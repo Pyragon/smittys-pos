@@ -26,23 +26,27 @@ html
         div#date Loading date...
         div#time Loading time...
         div#number-pad
+            p#enter-id.col-md-11.offset-md-1 Enter your ID or swipe your card
             div#text-bar.col-md-11.offset-md-1
             div.container
                 div.row
                     for i in [1, 2, 3, 4, 5, 6, 7, 8, 9]
-                        div.number.col-md-3.offset-md-1
+                        button.number.col-md-3.offset-md-1
                             span= i
                     div.col-md-3.offset-md-1
-                    div.col-md-3.offset-md-1.number
+                    button.col-md-3.offset-md-1.number
                         span 0
-                    div#backspace.col-md-3.offset-md-1.number
+                    button#backspace.col-md-3.offset-md-1.number
                         i.fas.fa-backspace
         div#index-buttons
             div.container
                 div.row
-                    button.index-btn.col-md-5.offset-md-1(data-name='clock', data-extra='in') Clock In
-                    button.index-btn.col-md-5.offset-md-1(data-name='clock', data-extra='out') Clock Out
+                    button.index-btn.col-md-5.offset-md-1 Quick Order
+                    div.col-md-5.offset-md-1
                 div.row
                     button.index-btn.col-md-5.offset-md-1 Table
                     button.index-btn.col-md-5.offset-md-1(data-name='function') Function
+                div.row
+                    button.index-btn.col-md-5.offset-md-1(data-name='clock', data-extra='in') Clock In
+                    button.index-btn.col-md-5.offset-md-1(data-name='clock', data-extra='out') Clock Out
         div#version Getting version...

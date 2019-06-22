@@ -1,123 +1,176 @@
-const electron = require('electron');
-const moment = require('moment');
+const electron = require("electron");
+const moment = require("moment");
 const {
     remote,
     ipcRenderer
 } = electron;
 
 let employeeReturnFunc = null;
+let n = null;
 
 const GREETINGS = [
-    'Welcome back, %name!',
-    'Hello again, %name.',
-    'Hope you\'re ready for a good day, %name.',
-    'Get enough sleep, %name?',
-    'Ah shit, here we go again, %name',
-    'Hi, welcome to Smittys! May I take your order?'
+    "Welcome back, %name!",
+    "Hello again, %name.",
+    "Hope you're ready for a good day, %name.",
+    "Get enough sleep, %name?",
+    "Ah shit, here we go again.",
+    "Hi, welcome to Smittys! May I take your order?"
 ];
 
 const GOODBYES = [
-    'Don\'t worry, the restaurant will still be here when you get back...',
-    'We\'ll miss you!',
-    'See ya next time, %name!'
+    "Don't worry, the restaurant will still be here when you get back...",
+    "We'll miss you!",
+    "See ya next time, %name!"
 ];
 
 $(document).ready(() => {
+    $("body").keydown(e => {
+        let key = e.which;
+        let current = $("#text-bar").html();
+        if (key == 8) {
+            if (!current) return false;
+            current = current.substring(0, current.length - 1);
+            $("#text-bar").html(current);
+        } else if (key >= 96 && key <= 105) {
+            let number = key - 96;
+            if ((number + current).length > 6)
+                return false;
+            $("#text-bar").html(current + number);
+        }
+        return false;
+    });
 
-    ipcRenderer.send('package:get-version');
+    ipcRenderer.send("package:get-version");
 
-    ipcRenderer.on('package:get-version', (event, data) => setVersion(data));
-    ipcRenderer.on('employee:return', (event, data) => {
-        if(!employeeReturnFunc) return false;
-        if(data.error) {
+    ipcRenderer.on("package:get-version", (event, data) => setVersion(data));
+    ipcRenderer.on("employee:return", (event, data) => {
+        if (!employeeReturnFunc) return false;
+        if (data.error) {
             sendAlert(data.error);
             employeeReturnFunc = null;
             return false;
         }
         employeeReturnFunc(data);
     });
-    ipcRenderer.on('pug:rendered-file', (event, data) => {
+    ipcRenderer.on("menu:open", (event, data) => {
         n = noty({
             text: data.title,
-            type: 'confirm',
-            layout: 'center',
+            type: "confirm",
+            layout: "center",
             dismissQueue: false,
             template: data.html,
-            theme: 'cryogen',
+            theme: "cryogen",
             buttons: [{
-                addClass: 'btn btn-danger', text: 'Cancel', onClick: ($noty) => $noty.close()
+                addClass: "btn btn-danger",
+                text: "Cancel",
+                onClick: closeNoty
             }]
         });
     });
 
-    $('#minimize-button').click(() => remote.getCurrentWindow().minimize());
+    $("#minimize-button").click(() => remote.getCurrentWindow().minimize());
 
-    $('#reload-button').click(() => {});
+    $("#reload-button").click(() => {});
 
-    $('#exit-button').click(() => remote.app.quit());
+    $("#exit-button").click(() => remote.app.quit());
 
-    $('.number').click(function() {
-        let current = $('#text-bar').html();
-        if($(this).prop('id') == 'backspace') {
-            if(!current) return false;
-            current = current.substring(0, current.length-1);
-            $('#text-bar').html(current);
+    $(".number").click(function () {
+        if (n) return false;
+        let current = $("#text-bar").html();
+        if ($(this).prop("id") == "backspace") {
+            if (!current) return false;
+            current = current.substring(0, current.length - 1);
+            $("#text-bar").html(current);
             return false;
         }
-        let number = $(this).find('span').html();
-        if((number+current).length > 6) {
-            sendAlert('Maximum: 6 numbers!');
-            return false;
-        }
-        $('#text-bar').html(current+number);
+        let number = $(this)
+            .find("span")
+            .html();
+        if ((number + current).length > 6) return false;
+        $("#text-bar").html(current + number);
     });
 
     $('.index-btn[data-name="function"]').click(() => {
-        let id = parseInt($('#text-bar').html());
-        if(!id) {
-            sendAlert('Please enter your ID or swipe your card first.');
+        if (n) return false;
+        let val = $("#text-bar").html();
+        if (!val) {
+            sendAlert("Please enter your ID or swipe your card first.");
             return false;
         }
-        openMenu('function', 'Functions', id);
+        let id = parseInt(val);
+        openMenu("function", "Functions", id);
     });
 
-    $('.index-btn[data-name="clock"]').click(function() {
-        let extra = $(this).data('extra');
-        employeeReturnFunc = (employee) => clock(employee, extra);
-        let id = parseInt($('#text-bar').html());
-        ipcRenderer.send('employee:get-with-id', id);
+    $('.index-btn[data-name="clock"]').click(function () {
+        if (n) return false;
+        let extra = $(this).data("extra");
+        let val = $("#text-bar").html();
+        if (!val) {
+            sendAlert("Please enter your ID or swipe your card first.");
+            return false;
+        }
+        let id = parseInt(val);
+        employeeReturnFunc = employee => clock(employee, extra);
+        ipcRenderer.send("employee:get-with-id", id);
     });
 
     function openMenu(menu, title, id) {
-        ipcRenderer.send('pug:render-file', { menu, title, id });
+        ipcRenderer.send("menu:open", {
+            menu,
+            title,
+            id
+        });
     }
 
     function clock(employee, extra) {
-        console.log(employee);
-        const arr = extra == 'in' ? GREETINGS : GOODBYES;
+        const arr = extra == "in" ? GREETINGS : GOODBYES;
         let response = arr[Math.floor(Math.random() * arr.length)];
-        sendAlert(response.replace('%name', employee.first_name));
+        sendAlert(response.replace("%name", employee.first_name));
     }
 
     function sendAlert(text) {
         var n = noty({
             text: text,
-            layout: 'topRight',
+            layout: "topRight",
             timeout: 5000,
-            theme: 'cryogen'
+            theme: "cryogen"
         });
     }
 
     function setVersion(version) {
-        $('#version').html('Version: '+version+' Made by Cody Thompson');
+        $("#version").html("Version: " + version + " Made by Cody Thompson");
     }
 
     function updateDateAndTime() {
         let date = moment();
-        $('#date').html(date.format('dddd, MMMM DD, YYYY'));
-        $('#time').html(date.format('h:mm:ss A'));
+        $("#date").html(date.format("dddd, MMMM DD, YYYY"));
+        $("#time").html(date.format("h:mm:ss A"));
     }
 
-    setInterval(updateDateAndTime, 1000);
+    function handleTab(e) {
+        if (e.keyCode === 9) document.body.classList.add("user-is-tabbing");
+    }
 
+    function handleClick() {
+        document.body.classList.remove("user-is-tabbing");
+    }
+
+    function closeNoty($noty) {
+        $noty.close();
+        if (n) n = null;
+    }
+
+    $(document).click(function (e) {
+        var target = e.target;
+        if (n == null) return;
+        var id = n.options.id;
+        if ($(e.target).closest("#" + id).length) {} else {
+            n.close();
+            n = null;
+        }
+    });
+
+    setInterval(updateDateAndTime, 1000);
+    window.addEventListener("keydown", handleTab);
+    window.addEventListener("mousedown", handleClick);
 });

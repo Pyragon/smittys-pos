@@ -91,7 +91,8 @@ body {
     background: #f7cf3d;
 }
 
-#exit-button, .modal-exit-button {
+#exit-button,
+.modal-exit-button {
     background: #ff5c5c;
     font-size: 9pt;
     width: 11px;
@@ -105,7 +106,8 @@ body {
 
 /* DATE/TIME */
 
-#date, #time {
+#date,
+#time {
     color: white;
     font-size: 13px;
     margin-left: 5px;
@@ -124,6 +126,11 @@ body {
     line-height: 60px;
     text-align: right;
     font-size: 24px;
+}
+
+#enter-id {
+    color: white;
+    text-align: center;
 }
 
 #number-pad {
@@ -166,6 +173,13 @@ body {
     border-radius: 10px;
     margin-top: 10px;
     color: white;
+}
+
+body:not(.user-is-tabbing) button:focus,
+body:not(.user-is-tabbing) input:focus,
+body:not(.user-is-tabbing) select:focus,
+body:not(.user-is-tabbing) textarea:focus {
+    outline: none;
 }
 
 .menu-btn {
