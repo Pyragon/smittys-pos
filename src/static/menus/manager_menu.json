@@ -1,7 +1,7 @@
 {
     "Update MySQL Properties": "updateMySQL",
     "Close POS": "closePOS",
-    "Check for Updates": "checkForUpdates"
+    "Check for Updates": "checkForUpdates",
     "Print Version Info": "printVersionInfo",
     "Print Debug Info" : "printDebugInfo:"
 }

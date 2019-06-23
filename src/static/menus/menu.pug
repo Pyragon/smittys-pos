@@ -6,7 +6,6 @@ script.
     $(document).ready(() => {
         
         $('.menu-btn').click(function() {
-            console.log($(this).data('command'));
             ipcRenderer.send('menu:click-option', $(this).data('command'));
         });
         
@@ -16,5 +15,5 @@ div.noty_message
 div.container
     div.row
         for option in Object.keys(data)
-            button.menu-btn.col-md-10.offset-md-1(data-command=data[option].command)= option
+            button.menu-btn.col-md-10.offset-md-1(data-command=(data[option].command || data[option]))= option
 div.noty_close

@@ -56,6 +56,7 @@ $(document).ready(() => {
         employeeReturnFunc(data);
     });
     ipcRenderer.on("menu:open", (event, data) => {
+        if(n) closeNoty(n);
         n = noty({
             text: data.title,
             type: "confirm",
@@ -69,7 +70,6 @@ $(document).ready(() => {
                 onClick: closeNoty
             }]
         });
-        sendAlert(data.rolePriveliges);
     });
 
     $("#minimize-button").click(() => remote.getCurrentWindow().minimize());
@@ -138,13 +138,16 @@ $(document).ready(() => {
     }
 
     function clickMenuOption(command) {
-        console.log(command);
         window[command]();
     }
 
-    function openManagerMenu() {
+    window.openManagerMenu = function() {
         openMenu('manager', 'Manager Menu', -1);
-    }
+    };
+
+    window.closePOS = function() {
+        remote.app.quit();
+    };
 
     function clock(employee, extra) {
         const arr = extra == "in" ? GREETINGS : GOODBYES;
